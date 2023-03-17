@@ -1,0 +1,37 @@
+"""This is a more specific overview of how to use the XY code for our project!
+
+There are pretty much x functions you need to know to actually get some good data. 
+The thing is, the tutorial only really goes through like 2 or 3 of them, and its 
+aimed at people with way more knowledge than us.
+
+The first, most important thing to know is how to create a system. The XY_model.py 
+file literally contains just a single class called XYSystem. As such, you can use it to create 
+a spin lattice. you do this by calling first,"""
+
+from XY_model import XYSystem
+
+"""Then to actually generate a system,"""
+
+system_name = XYSystem(temperature = ?, width = ?)
+
+"""This creates the XYSystem, and has the spin configurations we want to mess with
+ (inputs are temperature and width, which are kind of self-explanatory). 
+ If you want to show a raw system without anything done to it, call"""
+
+systemname.show()
+
+"""This generates a picture of the lattice that has a bunch of arrows. """
+"""Now let's perform some operations on the system. The first thing is to let the system solve into a 
+equilibrated state. This can be done using the built-in equilibrate function"""
+
+systemname.equilibrate(show = True/False)
+
+"""All you have to decide is if you want the computer to show you the intermediate lattices in between
+your originally-generated and equilibrated system. The next function to learn is the annealing function
+This is the most important one. The annealing function takes a start and stop temperature, and shows the
+equilibrated states in between the two temperatures"""
+
+systemname.annealing(Ti, Tf, nsteps, show = True/False)
+
+"""Ti and Tf are your initial and final temps, nsteps is the amount of steps in between, and the show 
+Boolean will generate images that we want"""
