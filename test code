@@ -1,0 +1,165 @@
+## IMPORT LIBRARY
+import numpy as np
+import scipy as sp
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import pylab
+import random
+import matplotlib.image as mpimg
+from matplotlib.legend_handler import HandlerLine2D
+import math
+from scipy.optimize import curve_fit
+from numpy import pi
+from numpy.random import default_rng
+
+
+
+def nearest_neighbors2(angle_list, index, N):
+    neighbors = []
+    
+    i1 = (index // N) * N + (index + 1) % N
+    neighbors.append(angle_list[i1])
+    
+    i2 = (index + N) % N**2
+    neighbors.append(angle_list[i2])
+    
+    i3 = (index // N) * N + (index - 1) % N
+    neighbors.append(angle_list[i3])
+    
+    i4 = (index - N) % N**2
+    neighbors.append(angle_list[i4])
+    
+    return neighbors
+    
+    
+    
+    
+def anglelist(N):
+    l = np.random.random(N**2)*2*np.pi
+    return l
+    
+    
+   
+    
+#test 2 one iteration of MC
+
+def one_energy2(angle_list, N, T):
+    spin_index = list(range(N**2))
+    random.shuffle(spin_index)
+    
+    for i in spin_index:
+        spin_neighbors = nearest_neighbors2(angle_list, i, N)
+        E_init = 0
+        for j in spin_neighbors:
+            E_init = -(np.cos(angle_list[i]-j)) + E_init
+            
+        d_angle = np.random.uniform(-np.pi,np.pi)
+        new_angle = angle_list[i] + d_angle
+        
+        E_final = 0
+        for j in spin_neighbors:
+            E_final = -(np.cos(new_angle-j)) + E_final
+            
+        #Using Boltzmann Distribution
+        boltz_ratio = np.exp((-1/T) * (E_final - E_init))
+        p = np.random.uniform(0.0, 1.0)
+        
+        if p < boltz_ratio:
+            angle_list[i] = angle_list[i] + d_angle
+            
+    return angle_list
+    
+    
+    
+    
+def mc_energy2(N, T, n=int(1000)):
+    
+    lst = anglelist(N)
+    
+    for k in range(n):
+        final_spins = one_energy2(lst, N, T)
+        
+    return final_spins
+    
+    
+    
+    
+# energy of a configuration at each spin
+
+def ave_site_energies(spinlist, N):
+    E = np.zeros(np.shape(spinlist))
+    spin_index = list(range(N**2))
+    
+    for i in spin_index:
+        spin_neighbors = nearest_neighbors2(spinlist, i, N)
+        E_i = 0
+        for j in spin_neighbors:
+            E_i = -0.5*(np.cos(spinlist[i]-j)) + E_i
+        
+        E[i] = E_i
+        
+    return E
+    
+    
+    
+    
+    
+def plot_lattice3(N, T):
+    spins = mc_energy2(N,T)
+    
+    spin_lattice = np.reshape(spins,(N,N))
+    energies = site_energies(spins, N)
+    
+    X, Y = np.meshgrid(np.arange(0, N),np.arange(0, N))
+    U = np.cos(spin_lattice)
+    V = np.sin(spin_lattice)
+    
+    #plotting
+    plt.figure(1, figsize=[7,7])
+    
+    plt.subplot(221)
+    q = plt.quiver(X, Y, U, V, units='width')
+    qk = plt.quiverkey(q, 0.1, 0.1, 1, r'$spin$',labelpos='E',coordinates='figure')
+    plt.title('T = %.2f, '%T+ r'$N_{spins}$ = '+str(N)+'x'+str(N))
+    plt.axis('off')
+    
+    plt.subplot(222, aspect = 'equal', adjustable = 'datalim')
+    Z = np.reshape(energies, (N,N))
+    c = plt.pcolor(Z, cmap='RdBu', vmin=-4, vmax=4)
+    plt.title('Energy per site')
+    plt.colorbar(c)
+    plt.axis('off')
+    plt.show()
+    
+    return spins, energies
+
+
+
+
+def transition(N,Ti,Tf,steps=2):
+    T = np.linspace(Ti,Tf,num=steps)
+    C_h = []
+    mag = []
+    
+    for t in T:
+        spinlist, energs = plot_lattice3(N,t)
+        
+        c = heatcapacity(energs, N, t)
+        C_h.append(c)
+        
+        mags = ave_magnetisation(spinlist, N)
+        mag.append(mags)
+        
+    plt.scatter(T, C_h)
+    plt.title('Specific Heat vs Temperature')
+    plt.xlabel('T')
+    plt.ylabel('c')
+    plt.show()
+    
+    plt.scatter(T, mag)
+    plt.title('Average Magnetisation vs Temperature')
+    plt.xlabel('T')
+    plt.ylabel(r'$<M>$')
+    plt.show()
+        
+    return 1 
