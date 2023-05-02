@@ -102,6 +102,39 @@ def ave_site_energies(spinlist, N):
     
     
     
+# finding the heat capacity
+
+def heatcapacity(energylist, N, T):
+    
+    ave_E_squared = (np.sum(energylist)/N)**2
+    ave_squared_E = np.sum(energylist**2)/N
+    
+    C = np.abs(ave_squared_E - ave_E_squared)/((N*T)**2)
+    
+    return C
+    
+    
+    
+    
+# finding magnetisation
+
+def ave_magnetisation(spinlist, N):
+    totcos = 0
+    totsin = 0
+    
+    for i in spinlist:
+        cos = np.cos(i)
+        totcos = totcos + cos
+        
+        sin = np.sin(i)
+        totsisn = totsin + sin
+        
+    M = ((totcos**2 + totsin**2)**0.5)/N
+    
+    return M
+    
+    
+    
     
     
 def plot_lattice3(N, T):
