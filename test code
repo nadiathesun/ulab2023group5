@@ -141,7 +141,7 @@ def plot_lattice3(N, T):
     spins = mc_energy2(N,T)
     
     spin_lattice = np.reshape(spins,(N,N))
-    energies = site_energies(spins, N)
+    energies = ave_site_energies(spins, N)
     
     X, Y = np.meshgrid(np.arange(0, N),np.arange(0, N))
     U = np.cos(spin_lattice)
